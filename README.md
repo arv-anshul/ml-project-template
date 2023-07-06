@@ -10,6 +10,7 @@
 │   └── 1.0_author.name_MODEL_TRAINING.ipynb
 ├── plots
 ├── requirements.txt
+├── run_mode.config
 ├── setup.py
 └── src
     ├── __init__.py
@@ -73,3 +74,7 @@
    - insert all the values which were vary project to project like threshold values, expected training and testing scores, etc.
 - [src.core.exception](src/core/exception.py) module
    - If you want change the `CustomException` class name with your personalized name.
+- [run_mode.config](run_mode.config)
+   - You have to set the `currentRunMode` for the project explicitly because it is important to segregate the **logs** of the project. If you don't do that program automatically set to `training` mode.
+- [logger.py](src/core/logger.py)
+   - Logger object takes `__name__` argument which makes easy to read the logs.
