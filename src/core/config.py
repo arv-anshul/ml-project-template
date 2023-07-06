@@ -1,21 +1,30 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Literal, TypeAlias
 
-from sklearn.ensemble import RandomForestClassifier
+RunMode: TypeAlias = Literal['training', 'prediction']
+RunId: TypeAlias = str
+run_mode_fp = Path('run_mode.config')
 
 
 @dataclass(init=False)
 class Config:
     """ Class for configuration instance attributes. """
 
-    def get_run_id(self) -> str:
-        """
-        Get the unique run ID.
+    @staticmethod
+    def get_run_id() -> RunId:
+        """ Get the unique run ID. """
+        return datetime.now().strftime('%d%m%y_%H%M%S')
 
-        Returns:
-            str: The unique run ID.
-        """
-        now = datetime.now()
-        date = now.date()
-        current_time = now.strftime("%H%M%S")
-        return f"{date}_{current_time}"
+    @staticmethod
+    def set_run_mode(mode: RunMode) -> None:
+        json.dump({'currentRunMode': mode}, open(run_mode_fp, 'w'))
+
+    @staticmethod
+    def get_run_mode() -> RunMode:
+        if not run_mode_fp.exists():
+            Config.set_run_mode('training')
+
+        return json.load(open(run_mode_fp))['currentRunMode']

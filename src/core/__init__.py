@@ -1,4 +1,4 @@
 from .config import Config
-from .exception import CustomException
-from .file_operation import FileOperation
-from .logger import Logger
+
+config = Config()
+run_mode = Config.get_run_mode()

@@ -1,46 +1,52 @@
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, TypeAlias
 
+from src.core import run_mode
+from src.core.constants import run_id
+
 LogLevel: TypeAlias = Literal['debug', 'info', 'warn', 'error', 'critical']
-LogFileName: TypeAlias = Literal['training', 'prediction']
 
 
+@dataclass
 class Logger:
-    def __init__(
-        self, run_id: str, log_module: str,
-        log_file_name: LogFileName,
-    ) -> None:
-        """Logger for the project."""
+    """
+    Logger for the project.
 
-        self.logger = logging.getLogger(f'{log_module}_{run_id}')
+    Args:
+        logger_name: __name__
+        mode: Literal['training', 'prediction']
+    """
+
+    logger_name: str
+
+    def __post_init__(self):
+        self.logger = logging.getLogger(self.logger_name)
+        self.run_id = run_id
         self.logger.setLevel(logging.DEBUG)
 
-        if log_file_name == 'training':
-            file_path: Path = Path(
-                f'logs/training_logs/train_log_{run_id}.log'
-            )
-        else:
-            file_path: Path = Path(
-                f'logs/prediction_logs/predict_log_{run_id}.log'
-            )
+        fp = Path(
+            f'logs/{run_mode}_logs/{self.run_id}.log'
+        )
+        fp.parent.mkdir(parents=True, exist_ok=True)
 
-        formatter: logging.Formatter = logging.Formatter(
-            "[ %(asctime)s ] %(filename)s:[%(lineno)d] - %(levelname)s - %(message)s"
+        formatter = logging.Formatter(
+            "[ %(asctime)s ] %(filename)s:[%(lineno)d] - %(name)s - %(levelname)s - %(message)s"
         )
 
-        file_handler: logging.FileHandler = logging.FileHandler(file_path)
+        file_handler = logging.FileHandler(fp)
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
 
-    def info(self, message: str) -> None:
+    def info(self, msg: object, *args: object) -> None:
         """Log an info-level message."""
-        self.logger.info(message)
+        self.logger.info(msg, *args)
 
-    def exception(self, message: str) -> None:
+    def exception(self, msg: object, *args: object) -> None:
         """Log an exception-level message."""
-        self.logger.exception(message)
+        self.logger.exception(msg, *args)
 
-    def log(self, log_level: LogLevel, message: str) -> None:
+    def log(self, level: LogLevel, msg: object, *args: object) -> None:
         """Log a message with the specified log level."""
-        getattr(self.logger, log_level)(message)
+        getattr(self.logger, level)(msg, *args)
