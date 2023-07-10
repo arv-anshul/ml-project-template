@@ -1,18 +1,28 @@
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-from cycler import cycler
-
-colors = cycler(color=plt.get_cmap("tab10").colors)  # ["b", "r", "g"]
 
 plt.style.use("ggplot")
-mpl.rcParams["figure.figsize"] = (20, 5)
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["axes.grid"] = True
-mpl.rcParams["grid.color"] = "lightgray"
-mpl.rcParams["axes.prop_cycle"] = colors
-mpl.rcParams["axes.linewidth"] = 1
-mpl.rcParams["xtick.color"] = "black"
-mpl.rcParams["ytick.color"] = "black"
-mpl.rcParams["font.size"] = 12
-mpl.rcParams["figure.titlesize"] = 25
-mpl.rcParams["figure.dpi"] = 100
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+# Axes Level Customization
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+plt.rcParams["axes.facecolor"] = "white"
+plt.rcParams['axes.edgecolor'] = 'lightgray'
+plt.rcParams["axes.linewidth"] = 1
+plt.rcParams["xtick.color"] = "black"
+plt.rcParams["ytick.color"] = "black"
+plt.rcParams["grid.color"] = "lightgray"
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+# Figure Level Customization
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+# plt.rcParams['font.family'] = 'operator mono lig'
+plt.rcParams["font.size"] = 12
+plt.rcParams["figure.titlesize"] = 25
+plt.rcParams["figure.titleweight"] = 700
+plt.rcParams["figure.dpi"] = 100
+
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+# Others
+# --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
+plt.rcParams['savefig.bbox'] = 'tight'
+plt.rcParams['savefig.directory'] = './plots'
