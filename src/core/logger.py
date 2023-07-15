@@ -6,7 +6,14 @@ from typing import Literal, TypeAlias
 from src.core import run_mode
 from src.core.constants import run_id
 
-LogLevel: TypeAlias = Literal['debug', 'info', 'warn', 'error', 'critical']
+
+def get_logger(logger_name: str) -> logging.Logger:
+    """
+    :logger_name (str): `__name__`
+
+    :returns: Logger
+    """
+    return Logger(logger_name).get_logger
 
 
 @dataclass
@@ -39,14 +46,7 @@ class Logger:
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
 
-    def info(self, msg: object, *args: object) -> None:
-        """Log an info-level message."""
-        self.logger.info(msg, *args)
-
-    def exception(self, msg: object, *args: object) -> None:
-        """Log an exception-level message."""
-        self.logger.exception(msg, *args)
-
-    def log(self, level: LogLevel, msg: object, *args: object) -> None:
-        """Log a message with the specified log level."""
-        getattr(self.logger, level)(msg, *args)
+    @property
+    def get_logger(self) -> logging.Logger:
+        """ Get the Logger object. """
+        return self.logger
