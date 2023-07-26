@@ -1,10 +1,9 @@
 """ Custom Exception for the project. Shows the filename and line number. """
 
+import logging
 from sys import exc_info
 from types import TracebackType
 from typing import TypeAlias
-
-from src.core.logger import Logger
 
 ExcInfo: TypeAlias = tuple[type[BaseException], BaseException, TracebackType]
 OptExcInfo: TypeAlias = ExcInfo | tuple[None, None, None]
@@ -12,10 +11,10 @@ OptExcInfo: TypeAlias = ExcInfo | tuple[None, None, None]
 
 class CustomException(Exception):
     def __init__(
-            self, message: object, detail: OptExcInfo, logger_obj: Logger
+            self, message: object, detail: OptExcInfo, logger: logging.Logger,
     ) -> None:
         super().__init__(message)
-        self.logger = logger_obj
+        self.logger = logger
         self.message = self.construct_message(message, detail)
 
     def construct_message(
@@ -34,10 +33,10 @@ class CustomException(Exception):
         return self.message
 
     def __repr__(self) -> str:
-        return CustomException.__name__.__str__()
+        return CustomException.__name__
 
     @classmethod
-    def wrap_with_custom_exception(cls, logger_obj: Logger):
+    def wrap_with_custom_exception(cls, logger: logging.Logger):
         """
         Wraps all methods of a class in a try-except block and raises a custom exception.
         """
@@ -47,7 +46,7 @@ class CustomException(Exception):
                     return method(*args, **kwargs)
                 except Exception as e:
                     raise CustomException(
-                        e, exc_info(), logger_obj,
+                        e, exc_info(), logger,
                     ) from e
             return wrapped
 

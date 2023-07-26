@@ -1,30 +1,30 @@
 import json
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Literal, TypeAlias
 
 RunMode: TypeAlias = Literal['training', 'prediction']
 RunId: TypeAlias = str
-run_mode_fp = Path('run_mode.config')
+project_config_fp = Path('project.config')
 
 
-@dataclass(init=False)
 class Config:
     """ Class for configuration instance attributes. """
 
-    @staticmethod
+    def create_config_file(run_mode: RunMode = 'training'):
+        json.dump({
+            'currentRunMode': run_mode,
+            'currentRunId': datetime.now().strftime('%d%m%y_%H%M%S'),
+        }, open(project_config_fp, 'w'))
+
     def get_run_id() -> RunId:
         """ Get the unique run ID. """
-        return datetime.now().strftime('%d%m%y_%H%M%S')
+        return json.load(open(project_config_fp))['currentRunId']
 
-    @staticmethod
     def set_run_mode(mode: RunMode) -> None:
-        json.dump({'currentRunMode': mode}, open(run_mode_fp, 'w'))
+        config_data: dict[str, str] = json.load(open(project_config_fp))
+        config_data.update({'currentRunMode': mode})
+        json.dump(config_data, open(project_config_fp, 'w'))
 
-    @staticmethod
     def get_run_mode() -> RunMode:
-        if not run_mode_fp.exists():
-            Config.set_run_mode('training')
-
-        return json.load(open(run_mode_fp))['currentRunMode']
+        return json.load(open(project_config_fp))['currentRunMode']

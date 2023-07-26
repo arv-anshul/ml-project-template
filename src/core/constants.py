@@ -1,9 +1,7 @@
 """ Contains the project constants. """
 
-from src.core.config import Config
 from src.database import schema_dict
 
-run_id = Config.get_run_id()
 BASE_DATA_NAME = 'raw_data.csv'
 
 TARGET_NAME = schema_dict['targetColumn']

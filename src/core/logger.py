@@ -1,17 +1,15 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, TypeAlias
 
-from src.core import run_mode
-from src.core.constants import run_id
+from src.core.config import Config
 
 
 def get_logger(logger_name: str) -> logging.Logger:
     """
     :logger_name (str): `__name__`
 
-    :returns: Logger
+    :returns: logging.Logger
     """
     return Logger(logger_name).get_logger
 
@@ -23,19 +21,18 @@ class Logger:
 
     Args:
         logger_name: __name__
-        mode: Literal['training', 'prediction']
     """
 
     logger_name: str
 
     def __post_init__(self):
         self.logger = logging.getLogger(self.logger_name)
-        self.run_id = run_id
         self.logger.setLevel(logging.DEBUG)
 
-        fp = Path(
-            f'logs/{run_mode}_logs/{self.run_id}.log'
-        )
+        self.run_mode = Config.get_run_mode()
+        self.run_id = Config.get_run_id()
+
+        fp = Path(f'logs/{self.run_mode}_logs/{self.run_id}.log')
         fp.parent.mkdir(parents=True, exist_ok=True)
 
         formatter = logging.Formatter(
