@@ -1,8 +1,7 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime as dt
 from pathlib import Path
-
-from src.core.config import Config
 
 
 def get_logger(logger_name: str) -> logging.Logger:
@@ -29,10 +28,8 @@ class Logger:
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(logging.DEBUG)
 
-        self.run_mode = Config.get_run_mode()
-        self.run_id = Config.get_run_id()
-
-        fp = Path(f'logs/{self.run_mode}_logs/{self.run_id}.log')
+        run_id = dt.now()
+        fp = Path(f'logs/{run_id:%D%m%y-%H}/{run_id:%D%m%y-%H%M%S}.log')
         fp.parent.mkdir(parents=True, exist_ok=True)
 
         formatter = logging.Formatter(

@@ -4,9 +4,9 @@ from pathlib import Path
 import dill
 import numpy as np
 
-from src.core.logger import Logger
+from src.core.logger import get_logger
 
-logger = Logger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass

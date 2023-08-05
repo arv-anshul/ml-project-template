@@ -17,7 +17,6 @@ __rough__/
 # Custom project files and folders
 logs/
 data/
-project.config
 
 # My custom files / folders
 *__rough__*.*
