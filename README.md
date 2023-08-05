@@ -47,34 +47,32 @@
 ## How to Setup
 
 - [setup.py](setup.py)
-   - Write the author name and e-mail.
-   - Write project name, project description.
-   - Provide project version.
+  - Write the author name and e-mail.
+  - Write project name, project description.
+  - Provide project version.
 - [requirements.txt](requirements.txt)
-   - Write all the pip packages required for the project.
+  - Write all the pip packages required for the project.
 - [schema.json](src/database/schema.json)
 
-   - This is dataset schema so fill it with dataset information.
+  - This is dataset schema so fill it with dataset information.
 
-   ```json
-   {
-     "numberOfColumns": null,
-     "columnNames": [],
-     "targetColumn": null,
-     "numColumnsNames": [],
-     "catColumnsNames": []
-   }
-   ```
+  ```json
+  {
+    "numberOfColumns": null,
+    "columnNames": [],
+    "targetColumn": null,
+    "numColumnsNames": [],
+    "catColumnsNames": []
+  }
+  ```
 
 - [core](src/core) package
-   - It is a package which contains basic required packages of any project like `logger`, `file_operation`, `config`, etc. modules.
+  - It is a package which contains basic required packages of any project like `logger`, `file_operation`, `config`, etc. modules.
 - [database](src/database) package
-   - This package is used to deal with database to perform operations on database like fetching, inserting and exporting data from database.
+  - This package is used to deal with database to perform operations on database like fetching, inserting and exporting data from database.
 - [src.entity.config](src/entity/config.py) module
-   - insert all the values which were vary project to project like threshold values, expected training and testing scores, etc.
+  - insert all the values which were _vary project to project_ like threshold values, expected training and testing scores, etc.
 - [src.core.exception](src/core/exception.py) module
-   - If you want change the `CustomException` class name with your personalized name.
-- [run_mode.config](run_mode.config)
-   - You have to set the `currentRunMode` for the project explicitly because it is important to segregate the **logs** of the project. If you don't do that program automatically set to `training` mode.
+  - You can change the `CustomException` class name with your personalized name.
 - [logger.py](src/core/logger.py)
-   - Logger object takes `__name__` argument which makes easy to read the logs.
+  - get_logger function takes `__name__` argument which makes easy to read the logs.
