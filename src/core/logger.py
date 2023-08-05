@@ -13,7 +13,7 @@ def get_logger(logger_name: str) -> logging.Logger:
     logger.setLevel(logging.DEBUG)
 
     run_id = dt.now()
-    fp = Path(f'logs/{run_id:%D%m%y-%H}/{run_id:%D%m%y-%H%M%S}.log')
+    fp = Path(f'logs/{run_id:%d%m%y-%H}/{run_id:%d%m%y-%H%M%S}.log')
     fp.parent.mkdir(parents=True, exist_ok=True)
 
     formatter = logging.Formatter(
