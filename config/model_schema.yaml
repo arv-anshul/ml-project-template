@@ -1,0 +1,38 @@
+cv_config:
+  class_: GridSearchCV
+  class_params:
+    cv: 3
+    estimator: null
+    param_grid: null
+    scoring: accuracy
+    verbose: 3
+  module: sklearn.model_selection
+models_config:
+  - class_: DecisionTreeClassifier
+    class_params:
+      max_depth: 10
+      max_split: 5
+    model_id: decision_tree
+    module: sklearn.tree
+    param_grid:
+      criterion:
+        - gini
+      max_depth:
+        - 5
+        - 10
+        - 15
+      min_impurity_decrease: 0.2
+  - class_: RandomForestClassifier
+    class_params:
+      max_depth: 10
+      max_split: 5
+    model_id: random_forest
+    module: sklearn.tree
+    param_grid:
+      criterion:
+        - gini
+      max_depth:
+        - 5
+        - 10
+        - 15
+      min_impurity_decrease: 0.2
