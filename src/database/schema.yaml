@@ -1,0 +1,11 @@
+number_of_columns: null
+target_column: target_column_name
+
+columns:
+  - Column_1
+
+num_columns:
+  - Column_1
+
+cat_columns:
+  - Column_1
