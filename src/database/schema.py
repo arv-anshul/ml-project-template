@@ -3,9 +3,9 @@ from enum import Enum
 
 
 class SchemaColumnType(Enum):
-    ALL = '_all_cols'
-    NUMERIC = '_num_cols'
-    CATEGORICAL = '_cat_cols'
+    ALL = "_all_cols"
+    NUMERIC = "_num_cols"
+    CATEGORICAL = "_cat_cols"
 
 
 class DataSchema:
@@ -18,12 +18,12 @@ class DataSchema:
         return cls._instance
 
     def _load_schema(self):
-        schema_dict = json.load(open('src/database/schema.json'))
+        schema_dict = json.load(open("src/database/schema.json"))
 
-        self._target_name: str = schema_dict['targetColumn']
-        self._all_cols: list[str] = schema_dict['columnNames']
-        self._num_cols: list[str] = schema_dict['numColumnsNames']
-        self._cat_cols: list[str] = schema_dict['catColumnsNames']
+        self._target_name: str = schema_dict["targetColumn"]
+        self._all_cols: list[str] = schema_dict["columnNames"]
+        self._num_cols: list[str] = schema_dict["numColumnsNames"]
+        self._cat_cols: list[str] = schema_dict["catColumnsNames"]
 
     @property
     def target_name(self) -> str:
@@ -48,7 +48,9 @@ class DataSchema:
         elif isinstance(col, list):
             col_list.extend(col)
 
-    def remove_value_from_column(self, col_type: SchemaColumnType, col: str | list[str]) -> None:
+    def remove_value_from_column(
+        self, col_type: SchemaColumnType, col: str | list[str]
+    ) -> None:
         col_list: list[str] = getattr(self, col_type.value)
         if isinstance(col, str):
             col_list.remove(col)

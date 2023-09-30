@@ -12,7 +12,7 @@ CVModels: TypeAlias = dict[str, Any]
 class CVClassParams(BaseModel):
     estimator: Any
     param_grid: Any
-    scoring: str = 'accuracy'
+    scoring: str = "accuracy"
     cv: int = 3
     verbose: int = 3
 

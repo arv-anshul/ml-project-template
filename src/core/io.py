@@ -14,13 +14,13 @@ YAML: TypeAlias = JSON
 
 
 def dump_model(model: Any, fp: Path) -> None:
-    with open(fp, 'wb') as f:
+    with open(fp, "wb") as f:
         dill.dump(model, f)
     logger.info('Model dumped at "%s"', fp)
 
 
 def load_model(fp: Path) -> Any:
-    with open(fp, 'rb') as f:
+    with open(fp, "rb") as f:
         logger.info('Model loading from "%s"', fp)
         return dill.load(f)
 
@@ -41,6 +41,6 @@ def load_yaml(fp: Path) -> YAML:
 
 
 def dump_yaml(data: YAML, fp: Path) -> None:
-    with open(fp, 'w') as f:
+    with open(fp, "w") as f:
         yaml.safe_dump(data, f)
     logger.info('Yaml dumped at "%s"', fp)
