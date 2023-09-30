@@ -1,63 +1,115 @@
-import importlib
+from importlib import import_module
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+from rich import print
 
 from src.core import io
-
-CVModels: TypeAlias = dict[str, Any]
-
-
-class CVClassParams(BaseModel):
-    estimator: Any
-    param_grid: Any
-    scoring: str = "accuracy"
-    cv: int = 3
-    verbose: int = 3
+from src.core.errors import InvalidCVModel, InvalidMLModel, ModelFactoryException
 
 
-class CVConfig(BaseModel):
+class ClassConstructorConfig(BaseModel):
     class_: str
     module: str
-    class_params: CVClassParams
+    params: dict[str, Any] = {}
 
 
-class ModelConfig(BaseModel):
-    model_id: str
-    class_: str
-    module: str
-    class_params: dict[str, Any] = {}
-    param_grid: dict[str, Any]
+class MLModelConfig(BaseModel):
+    modelId: str
+    classConstructorConfig: ClassConstructorConfig
+    paramGrid: dict[str, Any] = {}
 
 
-class _Config(BaseModel):
-    models_config: list[ModelConfig]
-    cv_config: CVConfig
+class ModelSchema(BaseModel):
+    cvConfig: ClassConstructorConfig
+    mlModelsConfig: list[MLModelConfig]
 
 
-def create_class(class_config: CVConfig | ModelConfig):
-    module = importlib.import_module(class_config.module)
-    class_ = getattr(module, class_config.class_)
-    return class_(**class_config.class_params)
+def _create_class(constructor_config: ClassConstructorConfig) -> Any:
+    """
+    Create an instance of a class based on its configuration.
+
+    Args:
+        constructor_config (ClassConstructorConfig): Configuration for the class.
+
+    Returns:
+        Any: An instance of the class.
+    """
+    module = import_module(constructor_config.module)
+    class_ = getattr(module, constructor_config.class_)
+    return class_(**constructor_config.params)
 
 
-def create_cv_class(cv_config: CVConfig, model_config: ModelConfig):
-    model = create_class(model_config)
+def _create_cv_instance(
+    *,
+    cv_config: ClassConstructorConfig,
+    ml_instance: Any,
+    param_grid: dict,
+) -> Any:
+    """
+    Create a cross-validation class from specified parameters.
 
-    cv_config.class_params.estimator = model
-    cv_config.class_params.param_grid = model_config.param_grid
+    Args:
+        cv_config (ClassConstructorConfig): Configuration for the cross-validation class.
+        ml_instance (Any): The machine learning model instance.
+        param_grid (dict): Parameter grid for hyperparameter tuning.
 
-    return create_class(cv_config)
+    Returns:
+        Any: An instance of the cross-validation class.
+    """
+    cv_config.params["estimator"] = ml_instance
+    cv_config.params["param_grid"] = param_grid
+
+    try:
+        cv_instance = _create_class(cv_config)
+    except (AttributeError, ModuleNotFoundError) as e:
+        raise InvalidCVModel(e)
+
+    return cv_instance
 
 
-def load_models_from_schema(schema_fp: Path) -> CVModels:
-    config_data = io.load_yaml(schema_fp)
-    config = _Config(**config_data)
+def load_models_from_schema(
+    model_schema_path: Path,
+    *,
+    wrap_with_cv_class: bool = True,
+) -> dict[str, Any]:
+    """
+    Load machine learning and cross-validation models from a YAML configuration file.
 
-    cv_models = {}
-    for model_config in config.models_config:
-        cv_model = create_cv_class(config.cv_config, model_config)
-        cv_models[model_config.model_id] = cv_model
+    Args:
+        model_schema_path (Path): The file path to the YAML configuration file.
+        wrap_with_cv_class (bool): You can specify whether you want to wrap with
+        cross-validator class. Defaults to True.
 
-    return cv_models
+    Returns:
+        dict[str, Any]: A dictionary mapping model IDs to their corresponding instances
+        wrapped with cross-validation class (if specified).
+    """
+    schema_data = io.load_yaml(model_schema_path)
+    try:
+        model_schema = ModelSchema(**schema_data)
+    except ValidationError as e:
+        print(
+            "[red]There is some validation error while validating "
+            f"'{model_schema_path}'.[/red]"
+        )
+        raise ModelFactoryException(e)
+
+    models = {}
+    for model_config in model_schema.mlModelsConfig:
+        try:
+            ml_instance = _create_class(model_config.classConstructorConfig)
+        except (AttributeError, ModuleNotFoundError) as e:
+            raise InvalidMLModel(e)
+
+        if wrap_with_cv_class:
+            models[model_config.modelId] = _create_cv_instance(
+                cv_config=model_schema.cvConfig,
+                ml_instance=ml_instance,
+                param_grid=model_config.paramGrid,
+            )
+        else:
+            models[model_config.modelId] = ml_instance
+
+    return models

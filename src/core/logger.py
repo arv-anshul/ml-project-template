@@ -8,6 +8,7 @@ logger_instances = {}
 def configure_logger(logger: logging.Logger, file_path: Path):
     logger.setLevel(logging.DEBUG)
 
+    file_path.parent.mkdir(exist_ok=True)
     file_handler = logging.FileHandler(file_path)
     formatter = logging.Formatter(
         "[%(asctime)s]:%(levelname)s:[%(lineno)d]:%(name)s - %(message)s"

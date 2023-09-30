@@ -1,20 +1,35 @@
-cv_config:
+cvConfig:
   class_: GridSearchCV
-  class_params:
-    cv: 3
-    estimator: null
-    param_grid: null
-    scoring: accuracy
-    verbose: 3
   module: sklearn.model_selection
-models_config:
-  - class_: DecisionTreeClassifier
-    class_params:
-      max_depth: 10
-      max_split: 5
-    model_id: decision_tree
-    module: sklearn.tree
-    param_grid:
+  params:
+    cv: 3
+    scoring: r2
+    verbose: 3
+mlModelsConfig:
+  - modelId: svm
+    classConstructorConfig:
+      class_: SVC
+      module: sklearn.svm
+      params:
+        kernel: poly
+        degree: 4
+        C: 3
+    paramGrid:
+      kernel:
+        - rbf
+        - poly
+      C:
+        - 1
+        - 2
+        - 10
+  - modelId: random_forest
+    classConstructorConfig:
+      class_: RandomForestClassifier
+      module: sklearn.ensemble
+      params:
+        max_depth: 10
+        n_estimators: 1000
+    paramGrid:
       criterion:
         - gini
       max_depth:
@@ -22,17 +37,7 @@ models_config:
         - 10
         - 15
       min_impurity_decrease: 0.2
-  - class_: RandomForestClassifier
-    class_params:
-      max_depth: 10
-      max_split: 5
-    model_id: random_forest
-    module: sklearn.tree
-    param_grid:
-      criterion:
-        - gini
-      max_depth:
-        - 5
-        - 10
-        - 15
-      min_impurity_decrease: 0.2
+  - modelId: logistic_reg
+    classConstructorConfig:
+      class_: LogisticRegression
+      module: sklearn.linear_model
