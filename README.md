@@ -47,7 +47,7 @@
 
 I already build some projects with this project template.
 
-> [!ATTENTION]
+> [!NOTE]
 >
 > They maybe seems irregular with their file structure but they follow this template.
 
